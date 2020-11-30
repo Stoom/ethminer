@@ -15,16 +15,17 @@ environment:
     secure: VnpF1MH5MEFvUI5MiMMMFlmbDdst+bfom5ZFVgalYPp/SYDhbejjXJm9Dla/IgpC
 
 cache:
-  - C:\CUDA\v11.1.1 -> appveyor.yml
+  - C:\CUDA\v11.1 -> appveyor.yml
 
 # Download CUDA Windows installer (local) and extract /compiler/* to /CUDA/vX.0/ zip archive.
 install: |
   git submodule update --init --recursive
-  if "%CUDA_VER%" == "11.1.1" set CUDA_ARCHIVE=cuda_11.1.1_456.81_win10.exe
-  if NOT EXIST C:\CUDA\v%CUDA_VER% (if "%CUDA_VER%" == "11.1.1" curl -L https://developer.download.nvidia.com/compute/cuda/%CUDA_VER%/local_installers/%CUDA_ARCHIVE% -o %CUDA_ARCHIVE%.exe)
+  set CUDA_VER_SHORT=%CUDA_VER:~0,4%
+  if "%CUDA_VER_SHORT%" == "11.1" set CUDA_ARCHIVE=cuda_11.1.1_456.81_win10.exe
+  if NOT EXIST C:\CUDA\v%CUDA_VER_SHORT4% (if "%CUDA_VER_SHORT%" == "11.1" curl -L https://developer.download.nvidia.com/compute/cuda/%CUDA_VER%/local_installers/%CUDA_ARCHIVE% -o %CUDA_ARCHIVE%.exe)
   if NOT EXIST C:\CUDA mkdir C:\CUDA
-  if NOT EXIST C:\CUDA\v%CUDA_VER% (if "%CUDA_VER%" == "11.1.1" 7z x %CUDA_ARCHIVE%.exe -oC:\CUDA cuda_nvcc/nvcc/*)
-  if NOT EXIST C:\CUDA\v%CUDA_VER% (move /Y C:\CUDA\cuda_nvcc/nvcc C:\CUDA\v%CUDA_VER%)
+  if NOT EXIST C:\CUDA\v%CUDA_VER_SHORT% (if "%CUDA_VER_SHORT%" == "11.1" 7z x %CUDA_ARCHIVE%.exe -oC:\CUDA cuda_nvcc/nvcc/*)
+  if NOT EXIST C:\CUDA\v%CUDA_VER_SHORT% (move /Y C:\CUDA\cuda_nvcc/nvcc C:\CUDA\v%CUDA_VER_SHORT%)
 
   set PATH=C:\Python36-x64;C:\Python36-x64\Scripts;%PATH%;C:\CUDA\v%CUDA_VER%\bin
   pip install requests gitpython
