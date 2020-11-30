@@ -27,7 +27,7 @@ install: |
   if NOT EXIST C:\CUDA\v%CUDA_VER_SHORT% (if "%CUDA_VER_SHORT%" == "11.1" 7z x %CUDA_ARCHIVE%.exe -oC:\CUDA cuda_nvcc/nvcc/*)
   if NOT EXIST C:\CUDA\v%CUDA_VER_SHORT% (move /Y C:\CUDA\cuda_nvcc/nvcc C:\CUDA\v%CUDA_VER_SHORT%)
 
-  set PATH=C:\Python36-x64;C:\Python36-x64\Scripts;%PATH%;C:\CUDA\v%CUDA_VER%\bin
+  set PATH=C:\Python36-x64;C:\Python36-x64\Scripts;%PATH%;C:\CUDA\v%CUDA_VER_SHORT%\bin
   pip install requests gitpython
   nvcc -V
 
