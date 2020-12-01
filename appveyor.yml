@@ -27,8 +27,11 @@ install: |
   
   if NOT EXIST C:\CUDA mkdir C:\CUDA
   if NOT EXIST C:\CUDA\v%CUDA_VER% (if "%CUDA_VER%" == "11.1" curl -L https://developer.download.nvidia.com/compute/cuda/%CUDA_ARCHIVE_VER%/local_installers/%CUDA_ARCHIVE% -o %CUDA_ARCHIVE%)
-  if NOT EXIST C:\CUDA\v%CUDA_VER% (if "%CUDA_VER%" == "11.1" 7z x %CUDA_ARCHIVE%.exe -oC:\CUDA cuda_nvcc/nvcc/*)
-  if NOT EXIST C:\CUDA\v%CUDA_VER% (if "%CUDA_VER%" == "11.1" move /Y C:\CUDA\cuda_nvcc/nvcc C:\CUDA\v%CUDA_VER%)
+  if NOT EXIST C:\CUDA\v%CUDA_VER% (if "%CUDA_VER%" == "11.1" 7z x %CUDA_ARCHIVE%.exe -oC:\CUDA cuda_nvcc/nvcc/* cuda_cudart/cudart/* cuda_nvrtc/nvrtc*/*)
+  if NOT EXIST C:\CUDA\v%CUDA_VER% (if "%CUDA_VER%" == "11.1" robocopy cuda_nvcc\nvcc v%CUDA_VER% /move /e)
+  if NOT EXIST C:\CUDA\v%CUDA_VER% (if "%CUDA_VER%" == "11.1" robocopy cuda_cudart\cudart v%CUDA_VER% /move /e)
+  if NOT EXIST C:\CUDA\v%CUDA_VER% (if "%CUDA_VER%" == "11.1" robocopy cuda_nvrtc\nvrtc v%CUDA_VER% /move /e)
+  if NOT EXIST C:\CUDA\v%CUDA_VER% (if "%CUDA_VER%" == "11.1" robocopy cuda_nvrtc\nvrtc_dev v%CUDA_VER% /move /e)
   
   if NOT EXIST C:\CUDA\v%CUDA_VER% (if "%CUDA_VER%" == "8.0" curl -L https://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda_8.0.61_windows-exe -o %CUDA_ARCHIVE%.exe)
   if NOT EXIST C:\CUDA\v%CUDA_VER% (if "%CUDA_VER%" == "8.0" 7z x %CUDA_ARCHIVE%.exe -oC:\CUDA compiler/* nvrtc*/*)
