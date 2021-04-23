@@ -1432,7 +1432,19 @@ void EthStratumClient::processResponse(Json::Value& responseObject)
             // at the end of the transmission.
             m_newjobprocessed = true;
         }
-        else if (_method == "mining.set_difficulty" && m_conn->StratumMode() == ETHEREUMSTRATUM)
+        else if (_method == "mining.set_target")
+        {
+            string target;
+            jPrm = responseObject.get("params", Json::Value::null);
+            if (jPrm.isArray())
+            {
+                target = jPrm.get(Json::Value::ArrayIndex(0), "").asString();
+                target = dev::padLeft(target, 64, '0');
+                target = "0x" + target;
+                m_session->nextWorkBoundary = h256(target);
+            }
+        }
+        else if (_method == "mining.set_difficulty")
         {
             if (m_conn->StratumMode() == EthStratumClient::ETHEREUMSTRATUM)
             {
@@ -1445,16 +1457,28 @@ void EthStratumClient::processResponse(Json::Value& responseObject)
                     m_session->nextWorkBoundary = h256(dev::getTargetFromDiff(nextWorkDifficulty));
                 }
             }
-            else
+            else if (m_conn->StratumMode() == EthStratumClient::STRATUM)
             {
-                cwarn << "Invalid mining.set_difficulty rpc method. Disconnecting ...";
-                if (m_conn->StratumModeConfirmed())
+                jPrm = responseObject.get("params", Json::Value::null);
+                if (jPrm.isArray())
                 {
-                    m_conn->MarkUnrecoverable();
+                    double nextWorkDifficulty =
+                        max(jPrm.get(Json::Value::ArrayIndex(0), 1).asDouble(), 0.0001);
+
+                    m_session->nextWorkBoundary = h256(dev::getTargetFromDiff(nextWorkDifficulty));
                 }
-                m_io_service.post(
-                    m_io_strand.wrap(boost::bind(&EthStratumClient::disconnect, this)));
             }
+            // Fun fact, this code never could execute before 😬
+            // else
+            // {
+            //     cwarn << "Invalid mining.set_difficulty rpc method. Disconnecting ...";
+            //     if (m_conn->StratumModeConfirmed())
+            //     {
+            //         m_conn->MarkUnrecoverable();
+            //     }
+            //     m_io_service.post(
+            //         m_io_strand.wrap(boost::bind(&EthStratumClient::disconnect, this)));
+            // }
         }
         else if (_method == "mining.set_extranonce" && m_conn->StratumMode() == ETHEREUMSTRATUM)
         {
