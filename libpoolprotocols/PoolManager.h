@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <condition_variable>
 
 #include <json/json.h>
 
@@ -55,6 +56,7 @@ public:
     double getCurrentDifficulty();
     unsigned getConnectionSwitches();
     unsigned getEpochChanges();
+    condition_variable g_donestopping;
 
 private:
     void rotateConnect();
@@ -70,6 +72,8 @@ private:
     void failovertimer_elapsed(const boost::system::error_code& ec);
     void submithrtimer_elapsed(const boost::system::error_code& ec);
     void reconnecttimer_elapsed(const boost::system::error_code& ec);
+    
+    void finishPoolClientStop();
 
     std::atomic<bool> m_running = {false};
     std::atomic<bool> m_stopping = {false};
@@ -88,6 +92,7 @@ private:
     boost::asio::deadline_timer m_failovertimer;
     boost::asio::deadline_timer m_submithrtimer;
     boost::asio::deadline_timer m_reconnecttimer;
+    boost::asio::deadline_timer m_shutdowntimer;
 
     std::unique_ptr<PoolClient> p_client = nullptr;
 

@@ -1249,8 +1249,11 @@ private:
             api.stop();
 
 #endif
-        if (PoolManager::p().isRunning())
+        if (PoolManager::p().isRunning()) {
             PoolManager::p().stop();
+            while(PoolManager::p().isRunning())
+                PoolManager::p().g_donestopping.wait(clilock);
+        }
 
         cnote << "Terminated!";
         return;
